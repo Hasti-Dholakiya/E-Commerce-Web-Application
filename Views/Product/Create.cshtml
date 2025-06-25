@@ -1,0 +1,117 @@
+﻿@model Day6.Models.Product
+@{
+    ViewBag.Title = "Create Product";
+    List<SelectListItem> data = ViewBag.CategoryList;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .hero {
+            background-image: url('https://source.unsplash.com/1600x400/?productivity,technology');
+            background-size: cover;
+            background-position: center;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .hero h1 {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 2.5rem;
+        }
+
+        .card {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+      
+        .form-floating label {
+            padding-left: 1rem;
+        }
+
+        .form-floating > .form-select {
+            padding-top: 1.625rem;
+            padding-left: 0.75rem;
+        }
+
+        .btn-lg {
+            padding: 0.75rem 1.25rem;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+  
+    <header class="hero mb-5">
+        <h1>Create a New Product</h1>
+    </header>
+
+    
+    <main class="container">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Product Information</h3>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm())
+                {
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                 
+                    <div class="form-floating mb-3">
+                        @Html.TextBoxFor(m => m.Name, new { @class = "form-control", placeholder = "Product Name" })
+                        @Html.LabelFor(m => m.Name)
+                        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        @Html.TextBoxFor(m => m.Price, new { @class = "form-control", placeholder = "Price", type = "number", step = "0.01", min = "0" })
+                        @Html.LabelFor(m => m.Price)
+                        @Html.ValidationMessageFor(m => m.Price, "", new { @class = "text-danger" })
+                    </div>
+
+                   
+                    <div class="form-floating mb-3">
+                        @Html.TextBoxFor(m => m.Stock, new { @class = "form-control", placeholder = "Stock", type = "number", min = "0" })
+                        @Html.LabelFor(m => m.Stock)
+                        @Html.ValidationMessageFor(m => m.Stock, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        @Html.TextAreaFor(m => m.Description, new { @class = "form-control", placeholder = "Description", style = "height: 120px;" })
+                        @Html.LabelFor(m => m.Description)
+                    </div>
+
+                   
+                    <div class="form-floating mb-4">
+                        @Html.DropDownListFor(m => m.CategoryId, data, "-- Select Category --", new { @class = "form-select" })
+                        @Html.LabelFor(m => m.CategoryId)
+                        @Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">Add Product</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

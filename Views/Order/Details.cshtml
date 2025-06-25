@@ -1,0 +1,125 @@
+﻿@model Day6.Models.Order
+@{
+    ViewBag.Title = "Order Details";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .hero {
+            background-image: url('https://source.unsplash.com/1600x400/?delivery,shopping');
+            background-size: cover;
+            background-position: center;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+            .hero h1 {
+                background-color: rgba(0, 0, 0, 0.6);
+                padding: 1rem 2rem;
+                border-radius: 8px;
+            }
+
+        .order-summary p {
+            margin-bottom: 0.4rem;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .action-buttons .btn {
+            min-width: 180px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero mb-5" role="banner">
+        <h1>Order #@Model.Id Details</h1>
+    </header>
+
+    <main class="container" role="main">
+        <section class="card shadow-sm mb-4">
+            <div class="card-body row order-summary">
+                <div class="col-md-6">
+                    <p><strong>Customer:</strong> @Model.CustomerName</p>
+                    <p><strong>Order Date:</strong> @Model.OrderDate.ToShortDateString()</p>
+                    <p><strong>Status:</strong> @CustomHelpers.StatusBadge(Model.Status)</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="fs-5 text-success">
+                        <strong>Total:</strong> @CustomHelpers.DisplayPrice(Model.Total)
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h4 class="mb-3">Items in This Order</h4>
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-striped align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Unit Price</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col" class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            <tr>
+                                <td>@item.ProductName</td>
+                                <td>@CustomHelpers.DisplayPrice(item.UnitPrice)</td>
+                                <td>@item.Quantity</td>
+                                <td class="text-end fw-bold">@CustomHelpers.DisplayPrice(item.Total)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <section class="action-buttons d-flex flex-wrap gap-2 mb-4">
+            @using (Html.BeginForm("Complete", "Order", new { id = Model.Id }, FormMethod.Post))
+            {
+                <button type="submit" class="btn btn-success">Mark as Completed</button>
+            }
+            <a href="@Url.Action("DownloadInvoice", "Order", new { id = Model.Id })" class="btn btn-info">Download Invoice</a>
+            <a href="@Url.Action("List", "Order")" class="btn btn-secondary">Back to Orders</a>
+        </section>
+        @if (Model.Status != "Completed")
+        {
+            <div class="alert alert-warning" role="alert">
+                <strong>Note:</strong> You must complete the order before downloading the invoice.
+            </div>
+        }
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+

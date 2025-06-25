@@ -1,0 +1,151 @@
+﻿@model List<Day6.Models.CartItem>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Your Cart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .hero {
+            background-image: url('https://source.unsplash.com/1600x400/?shopping,cart');
+            background-size: cover;
+            background-position: center;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 1px 1px 5px rgba(0,0,0,0.6);
+        }
+
+            .hero h1 {
+                background-color: rgba(0, 0, 0, 0.6);
+                padding: 15px 30px;
+                border-radius: 10px;
+            }
+
+        .container-cart {
+            max-width: 1000px;
+            margin: -60px auto 40px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        .table th {
+            background-color: #212529;
+            color: #ffffff;
+        }
+
+        .btn-remove {
+            color: #dc3545;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+            .btn-remove:hover {
+                text-decoration: underline;
+                color: #a71d2a;
+            }
+
+        .input-group input[type=number] {
+            max-width: 80px;
+        }
+
+        .total-section {
+            background-color: #f1f3f5;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: right;
+            font-size: 1.25rem;
+        }
+
+        .btns-bottom {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+            .btns-bottom a {
+                min-width: 180px;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="hero mb-5">
+        <h1>Your Shopping Cart</h1>
+    </div>
+
+    <div class="container container-cart">
+        @if (!Model.Any())
+        {
+            <div class="text-center">
+                <h4>Your cart is empty.</h4>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">Start Shopping</a>
+            </div>
+        }
+        else
+        {
+            <table class="table table-bordered table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th style="width: 200px;">Quantity</th>
+                        <th>Total</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.ProductName</td>
+                            <td>@item.UnitPrice.ToString("C")</td>
+                            <td>
+                                @using (Html.BeginForm("UpdateQuantity", "Cart", FormMethod.Post))
+                                {
+                                    @Html.Hidden("id", item.ProductId)
+                                    <div class="input-group">
+                                        <input type="number" name="quantity" class="form-control" value="@item.Quantity" min="1" />
+                                        <button type="submit" class="btn btn-outline-primary">Update</button>
+                                    </div>
+                                }
+                            </td>
+                            <td>@item.TotalPrice.ToString("C")</td>
+                            <td>
+                                <a class="btn-remove" href="@Url.Action("Remove", new { id = item.ProductId })" onclick="return confirm('Remove this item?');">Remove</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="total-section mb-4">
+                Total: <strong>@Model.Sum(x => x.TotalPrice).ToString("C")</strong>
+            </div>
+
+            <div class="btns-bottom">
+                <a href="@Url.Action("Index", "Product")" class="btn btn-outline-secondary">← Continue Shopping</a>
+                <a href="@Url.Action("PlaceOrder", "Order")" class="btn btn-success">Place Order</a>
+            </div>
+        }
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+

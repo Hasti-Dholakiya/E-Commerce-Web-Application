@@ -1,0 +1,27 @@
+﻿@helper DisplayPrice(decimal price)
+{
+    <span class="text-success">@price.ToString("C")</span>
+}
+
+@helper StockStatus(int stock)
+{
+    if (stock > 0)
+    {
+        <span class="text-primary">In Stock</span>
+    }
+    else
+    {
+        <span class="text-danger">Out of Stock</span>
+    }
+}
+
+@helper StatusBadge(string status)
+{
+    var color = status == "Delivered" ? "green" : "orange";
+    <span style="color: white; background-color: @color; padding: 5px; border-radius: 5px;">@status</span>
+}
+
+@helper CategoryLabel(string categoryName)
+{
+    <span class="badge bg-info text-dark">@categoryName</span>
+}

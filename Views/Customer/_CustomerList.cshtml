@@ -1,0 +1,16 @@
+﻿@model List<Day6.Models.Customer>
+
+<h4>Customer List</h4>
+<table>
+    <tr><th>Name</th><th>Email</th><th>Mobile</th><th>Gender</th></tr>
+    @foreach (var c in Model)
+    {
+        <tr>
+            <td>@c.Name</td>
+            <td>@c.Email</td>
+            <td>@c.Mobile</td>
+            <td>@c.Gender</td>
+        </tr>
+    }
+</table>
+

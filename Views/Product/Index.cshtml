@@ -1,0 +1,158 @@
+﻿@model List<Day6.Models.Product>
+@{
+    ViewBag.Title = "Product Catalog";
+    var cart = Session["Cart"] as List<Day6.Models.CartItem> ?? new List<Day6.Models.CartItem>();
+    var customerId = Session["CustomerId"];
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .product-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-card .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card .btn {
+            font-size: 0.875rem;
+        }
+
+        .cart-table input[type="number"] {
+            max-width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+
+       
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary">Product Catalog</h2>
+            <div>
+                @if (customerId == null)
+                {
+                    <a href="/Customer/Register" class="btn btn-outline-primary me-2">Register</a>
+                    <a href="/Customer/Login" class="btn btn-primary">Login</a>
+                }
+                else
+                {
+                    <span class="me-3">Welcome, Customer @customerId</span>
+                    <a href="/Customer/Logout" class="btn btn-danger">Logout</a>
+                }
+            </div>
+        </div>
+
+       
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+            @foreach (var item in Model)
+            {
+             
+                var imageUrl = $"https://plus.unsplash.com/premium_photo-1661667075996-18a04b626fe2?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D,{item.Name.Replace(" ", "")}";
+                <div class="col">
+                    <div class="card product-card h-100 shadow-sm border-0">
+                        <img src="@imageUrl" class="card-img-top" alt="@item.Name" />
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text text-muted">@item.Description</p>
+                            <p class="fw-bold text-success">$@item.Price</p>
+                            <p class="text-secondary mb-2">Stock: @item.Stock</p>
+
+                            @if (customerId != null)
+                             {
+                                using (Html.BeginForm("AddToCart", "Product", FormMethod.Post))
+                                {
+                                    @Html.Hidden("productId", item.Id)
+                                    <button type="submit" class="btn btn-sm btn-primary w-100 mb-2">Add to Cart</button>
+                                }
+                             }
+                            else
+                            {
+                                <div class="alert alert-warning p-2 text-center">Login to add</div>
+                            }
+
+                            <div class="d-flex justify-content-between">
+                                <a href="@Url.Action("Edit", "Product", new { id = item.Id })" class="btn btn-sm btn-outline-warning w-50 me-1">Edit</a>
+                                <a href="@Url.Action("Delete", "Product", new { id = item.Id })" class="btn btn-sm btn-outline-danger w-50 ms-1" onclick="return confirm('Are you sure?');">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+             }
+        </div>
+
+        
+        @if (cart.Count > 0)
+        {
+            <hr class="my-5" />
+            <h3>Your Cart</h3>
+            <div class="table-responsive cart-table">
+                <table class="table align-middle shadow-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in cart)
+                        {
+                            <tr>
+                                <td>@item.ProductName</td>
+                                <td>$@item.UnitPrice</td>
+                                <td>
+                                    @using (Html.BeginForm("UpdateCart", "Product", FormMethod.Post, new { @class = "d-flex flex-column align-items-start" }))
+                                    {
+                                        @Html.Hidden("productId", item.ProductId)
+                                        <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control mb-1" />
+                                        <button type="submit" class="btn btn-sm btn-outline-info">Update</button>
+                                    }
+                                </td>
+                                <td>$@item.TotalPrice</td>
+                                <td>
+                                    <a href="@Url.Action("RemoveFromCart", "Product", new { productId = item.ProductId })" class="btn btn-sm btn-outline-danger">Remove</a>
+                                </td>
+                            </tr>
+                        }
+                        <tr class="table-secondary fw-bold">
+                            <td colspan="3" class="text-end">Total:</td>
+                            <td colspan="2">$@cart.Sum(x => x.TotalPrice)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            using (Html.BeginForm("PlaceOrder", "Product", FormMethod.Post))
+            {
+                <button type="submit" class="btn btn-success btn-lg mt-3">Place Order</button>
+            }
+        }
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success mt-4">@TempData["Success"]</div>
+        }
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+﻿@model List<Day6.Models.Product>
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+ 
+    <div>
+
+
+        <table class="table table-bordered">
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Status</th>
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Price</td>
+                    <td>
+                        @if (item.Stock <= 0)
+                        {
+                            <span class="text-danger">Out of Stock</span>
+                        }
+                        else
+                        {
+                            <span class="text-success">In Stock</span>
+                        }
+                    </td>
+                </tr>
+                
+                    @Html.ActionLink("Add to Cart", "AddToCart", "Cart", new { id = item.Id }, new { @class = "btn btn-sm btn-success" })
+              
+            }
+        </table>
+        
+    </div>
+</body>
+</html>
+
+

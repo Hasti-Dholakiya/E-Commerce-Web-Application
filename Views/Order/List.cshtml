@@ -1,0 +1,139 @@
+﻿@model IEnumerable<Day6.Models.Order>
+
+@{
+    ViewBag.Title = "Order List";
+    var customers = ViewBag.Customers as List<SelectListItem>;
+    var selectedCustomerId = ViewBag.SelectedCustomerId as int?;
+    var totalOrders = Model.Count();
+    var totalItems = Model.Sum(o => o.OrderItems?.Sum(i => i.Quantity) ?? 0);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .hero {
+            background-image: url('https://source.unsplash.com/1600x400/?orders,commerce');
+            background-size: cover;
+            background-position: center;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .hero h1 {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+        }
+
+        .card-stats {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-stats h5 {
+            margin-bottom: 0.3rem;
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .card-stats span {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .table td .btn {
+            padding: 0.25rem 0.75rem;
+        }
+
+        .form-select, .form-control {
+            min-width: 200px;
+        }
+
+       
+    </style>
+</head>
+<body>
+    <header class="hero mb-5">
+        <h1>All Orders</h1>
+    </header>
+    <main class="container">
+        <form method="get" action="@Url.Action("List", "Order")" class="row g-3 align-items-center mb-4">
+            <div class="col-auto">
+                <label for="customerId" class="col-form-label fw-semibold">Filter by Customer:</label>
+            </div>
+            <div class="col-md-4">
+                @Html.DropDownList("customerId", customers, "-- All --", new { @class = "form-select" })
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-outline-primary">Apply Filter</button>
+            </div>
+        </form>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card-stats">
+                    <h5>Total Orders</h5>
+                    <span class="text-primary">@totalOrders</span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card-stats">
+                    <h5>Total Items Ordered</h5>
+                    <span class="text-success">@totalItems</span>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive mb-5">
+            <table class="table table-bordered table-striped align-middle shadow-sm">
+                <thead class="table-primary text-dark">
+                    <tr>
+                        <th scope="col">Order ID</th>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Order Date</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>#@order.Id</td>
+                            <td>@order.CustomerName</td>
+                            <td>@order.OrderDate.ToShortDateString()</td>
+                            <td class="text-success fw-semibold">@order.Total.ToString("C")</td>
+                            <td>@CustomHelpers.StatusBadge(order.Status)</td>
+                            <td>
+                                @Html.ActionLink("View", "Details", "Order", new { id = order.Id }, new { @class = "btn btn-sm btn-outline-info" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

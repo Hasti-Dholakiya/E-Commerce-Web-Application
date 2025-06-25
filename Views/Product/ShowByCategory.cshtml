@@ -1,0 +1,45 @@
+﻿@{
+    ViewBag.Title = "Products by Category";
+    var categories = ViewData["Categories"] as List<Day6.Models.Category>;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <h2>Products</h2>
+        <select id="categoryDropdown" class="form-control">
+            <option value="">-- Select Category --</option>
+            @foreach (var cat in categories)
+            {
+                <option value="@cat.CategoryId">@cat.Name</option>
+            }
+        </select>
+
+        <div id="productContainer"></div>
+
+        @section Scripts {
+            <script>
+                $('#categoryDropdown').change(function () {
+                    var catId = $(this).val();
+                    if (catId) {
+                        $.get('/Product/ProductList?categoryId=' + catId, function (data) {
+                            $('#productContainer').html(data);
+                        });
+                    } else {
+                        $('#productContainer').html('');
+                    }
+                });
+            </script>
+        }
+
+    </div>
+</body>
+</html>
+
+
